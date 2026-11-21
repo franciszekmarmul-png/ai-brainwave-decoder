@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AI Brainwave Decoder</title>
+  <meta name="description" content="Train AI models to decode imagined movements from real EEG recordings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="banner" id="banner" hidden></div>
+
+    <header>
+      <h1>AI Brainwave Decoder</h1>
+      <p>Pick a dataset, a person and a model, then train it and watch how accurately it reads imagined movements from EEG it has never seen.</p>
+    </header>
+
+    <div class="main">
+      <form class="panel controls" id="form">
+        <div class="field">
+          <label class="label" for="dataset">Dataset</label>
+          <select id="dataset"></select>
+          <div class="hint" id="dataset-hint"></div>
+        </div>
+        <div class="field">
+          <label class="label" for="person">Person</label>
+          <select id="person"></select>
+        </div>
+        <div class="field">
+          <span class="label">Model</span>
+          <div class="models" id="models"></div>
+        </div>
+        <div class="field">
+          <div class="limit"><label class="label" for="limit">Time limit</label><output id="limit-out" for="limit">2:00</output></div>
+          <input type="range" id="limit" min="15" max="300" step="15" value="120">
+          <div class="hint">How long you're willing to wait. The chart shows the best accuracy reached within it.</div>
+        </div>
+        <div class="field" id="speed-field" hidden>
+          <span class="label">Playback speed</span>
+          <div class="speeds" id="speeds">
+            <button type="button" data-speed="1" aria-pressed="false">1×</button>
+            <button type="button" data-speed="4" aria-pressed="true">4×</button>
+            <button type="button" data-speed="16" aria-pressed="false">16×</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="train" type="submit">Train model</button>
+          <button class="secondary" id="stop" type="button" hidden>Stop</button>
+        </div>
+      </form>
+
+      <section class="stage">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tab-train" aria-selected="true" aria-controls="view-train" type="button">Training</button>
+          <button class="tab" role="tab" id="tab-code" aria-selected="false" aria-controls="view-code" type="button">Code</button>
+        </div>
+
+        <div class="panel" id="view-train" role="tabpanel" aria-labelledby="tab-train">
+          <div class="stats">
+            <div class="stat"><div class="v" id="s-now">–</div><div class="k">Current accuracy</div></div>
+            <div class="stat"><div class="v" id="s-best">–</div><div class="k">Best within limit</div></div>
+            <div class="stat"><div class="v" id="s-when">–</div><div class="k">Time to reach best</div></div>
+            <div class="stat"><div class="v" id="s-epoch">–</div><div class="k">Epoch</div></div>
+          </div>
+          <div class="status"><span class="dot" id="dot"></span><span id="status">Ready. Press Train model to start.</span></div>
+          <svg id="chart" viewBox="0 0 720 320" role="img" tabindex="0" aria-label="Accuracy on unseen trials over training time. Move over the chart, or use the arrow keys, to read each recorded point."></svg>
+          <p class="hint chart-hint">Move over the chart to see the accuracy recorded at each moment.</p>
+          <p class="summary" id="summary">Accuracy is measured on trials the model never trained on.</p>
+          <p class="note" id="note" hidden></p>
+        </div>
+
+        <div id="view-code" role="tabpanel" aria-labelledby="tab-code" hidden>
+          <div class="stage">
+            <p class="now" id="now">Press <b>Train model</b> to watch the command run and the code it steps through.</p>
+            <div class="code-grid">
+              <div class="term">
+                <div class="bar"><span class="lights"><i></i><i></i><i></i></span><span>terminal</span></div>
+                <div class="term-body" id="term" aria-live="polite"></div>
+              </div>
+              <div class="editor">
+                <div class="bar"><div class="files" id="files" role="tablist"></div></div>
+                <div class="code-body" id="code"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Your runs</h2>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th>Dataset</th><th>Person</th><th>Model</th><th>Best</th><th>Reached at</th><th>Limit</th></tr></thead>
+              <tbody id="runs"><tr><td colspan="6" class="empty">Runs you train appear here so you can compare models.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <details class="panel sources">
+      <summary><h2>Sources</h2><span class="hint">Where the data, models and software came from</span></summary>
+      <div class="sources-grid">
+        <div>
+          <h3>Data</h3>
+          <ul>
+            <li><a href="https://www.bbci.de/competition/iv/">BCI Competition IV, dataset 2a</a>: 9 people, 4 imagined movements, 22 EEG channels. Brunner, Leeb, M&uuml;ller-Putz, Schl&ouml;gl and Pfurtscheller, Graz University of Technology, 2008.</li>
+            <li><a href="https://www.bbci.de/competition/iv/">BCI Competition IV, dataset 2b</a>: 9 people, left vs right hand, 3 channels. Leeb, Brunner, M&uuml;ller-Putz, Schl&ouml;gl and Pfurtscheller, 2008.</li>
+            <li><a href="https://physionet.org/content/eegmmidb/1.0.0/">PhysioNet EEG Motor Movement/Imagery Dataset</a>: 109 people, 64 channels; this app uses the first 10. Schalk et al., <i>IEEE Trans. Biomed. Eng.</i> 51(6), 2004, shared through PhysioNet (Goldberger et al., <i>Circulation</i> 101(23), 2000).</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Models</h3>
+          <ul>
+            <li><a href="https://doi.org/10.1088/1741-2552/aace8c">EEGNet</a>: Lawhern et al., &ldquo;EEGNet: a compact convolutional neural network for EEG-based brain&ndash;computer interfaces&rdquo;, <i>J. Neural Eng.</i> 15(5), 2018.</li>
+            <li><a href="https://doi.org/10.1109/IJCNN.2008.4634130">FBCSP</a>: Ang, Chin, Zhang and Guan, &ldquo;Filter Bank Common Spatial Pattern (FBCSP) in brain-computer interface&rdquo;, IJCNN 2008.</li>
+            <li><a href="https://doi.org/10.1109/86.895946">CSP + LDA</a>: Ramoser, M&uuml;ller-Gerking and Pfurtscheller, &ldquo;Optimal spatial filtering of single trial EEG during imagined hand movement&rdquo;, <i>IEEE Trans. Rehab. Eng.</i> 8(4), 2000.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Software</h3>
+          <ul>
+            <li><a href="https://github.com/NeuroTechX/moabb">MOABB</a> downloads and epochs the datasets (Jayaram and Barachant, <i>J. Neural Eng.</i> 15(6), 2018).</li>
+            <li><a href="https://mne.tools/">MNE-Python</a> for filtering and CSP, <a href="https://scikit-learn.org/">scikit-learn</a> for LDA and logistic regression, and <a href="https://pytorch.org/">PyTorch</a> for EEGNet.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <footer>
+      Built for The Knowledge Society by Franciszek Marmul. Code under the MIT licence; each dataset keeps its own licence.
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

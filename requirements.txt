@@ -1,0 +1,7 @@
+torch
+mne
+moabb
+scikit-learn
+pandas
+matplotlib
+pytest

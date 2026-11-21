@@ -1,0 +1,9 @@
+.venv/
+data/
+results/models/
+results/logs/
+__pycache__/
+.pytest_cache/
+.claude/
+.superpowers/
+.DS_Store
