@@ -12,7 +12,9 @@ N_SAMPLES = 256
 _RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
 
-os.environ.setdefault("MNE_DATA", str(_RAW_DIR.resolve()))
+if "MNE_DATA" not in os.environ:
+    _RAW_DIR.mkdir(parents=True, exist_ok=True)
+    os.environ["MNE_DATA"] = str(_RAW_DIR.resolve())
 
 
 @dataclass(frozen=True)
