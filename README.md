@@ -107,7 +107,7 @@ Run the tests with `.venv/bin/pytest -m "not data"`. Leave out `-m "not data"` t
 
 ## Credits
 
-Built for The Knowledge Society (TKS) by Franciszek Marmul, with help from Claude, an AI assistant.
+Built for The Knowledge Society (TKS) by Franciszek Marmul.
 
 ## License
 
